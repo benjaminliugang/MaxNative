@@ -2,11 +2,16 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, Image, TouchableHighlight } from 'react-native';
 import {Actions} from 'react-native-router-flux'
+import {dbFunction} from '../basic/sqliteData'
 
 
 export default class Navigation extends Component {
   onPress() {
     return Actions.newItem();
+  }
+
+  initDB() {
+    dbFunction.initDB();
   }
 
   render() {
@@ -17,10 +22,12 @@ export default class Navigation extends Component {
             <Image source={require('../../image/calendar-image.png')} style={styles.navHeaderImage}/>
             <Text style={styles.navHeaderText}> Calendar </Text>
           </View>
-          <View style={styles.navHeaderBody}>
-            <Image source={require('../../image/calendar-image.png')} style={styles.navHeaderImage}/>
-            <Text style={styles.navHeaderText}> Explore </Text>
-          </View>
+          <TouchableHighlight style={styles.navHeaderBody} onPress={this.initDB.bind(this)}>
+            <View style={styles.navHeaderBody}>
+              <Image source={require('../../image/calendar-image.png')} style={styles.navHeaderImage}/>
+              <Text style={styles.navHeaderText}> Init DB </Text>
+            </View>
+          </TouchableHighlight>
           <View style={styles.navHeaderBody}>
             <Image source={require('../../image/calendar-image.png')} style={styles.navHeaderImage}/>
             <Text style={styles.navHeaderText}> Tasks </Text>

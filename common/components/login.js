@@ -9,12 +9,19 @@ import {
     ScrollView,
     Image
 } from 'react-native';
-import {Actions} from 'react-native-router-flux'
+import {Actions} from 'react-native-router-flux';
+import BasicVariables from '../basic/basicVariables';
+import {dbFunction} from '../basic/sqliteData'
 
 var Form = t.form.Form;
 
 var options = {
-  auto: 'placeholders'
+  auto: 'placeholders',
+  fields: {
+    Password: {
+      secureTextEntry: true
+    }
+  }
 };
 
 var Login = t.struct({
@@ -25,6 +32,7 @@ var Login = t.struct({
 export default class MaxLogin extends Component {
   onPress() {
     var value = this.refs.form.getValue();
+    dbFunction.initDB();
     if (value) {
       return Actions.navigation();
     }

@@ -4,6 +4,7 @@ import t from 'tcomb-form-native';
 import Navigation from './components/navigation';
 import MaxLogin from './components/login';
 import NewItem from './components/newItem/newItem';
+import WorkOrderForm from './components/newItem/workOrder/workOrderForm';
 import {
     StyleSheet,
     Text,
@@ -29,7 +30,10 @@ export default class MaxNative extends Component {
                     <Scene key="launch" component={MaxLogin} title="Launch" initial={true} style={{flex:1, backgroundColor:'transparent'}}/>
                     <Scene key="navigation" direction="vertical">
                       <Scene key="navigationModal" component={Navigation} schema="modal"  hideNavBar={true} style={{flex:1, backgroundColor:'transparent'}}/>
-                      <Scene key="newItem" component={NewItem} title="New Item" titleStyle={styles.navTitleText} hideNavBar={false} navigationBarStyle={styles.navHeader} backTitle="Back" style={{flex:1, backgroundColor:'transparent'}}/>
+                      <Scene key="newItem" direction="vertical" hideNavBar={false}>
+                        <Scene key="newItemModal" component={NewItem} schema="modal" title="New Item" leftTitle="Back" onLeft={() => {return Actions.navigationModal();}} titleStyle={styles.navTitleText} hideNavBar={false} navigationBarStyle={styles.navHeader} style={{flex:1, backgroundColor:'transparent'}}/>
+                        <Scene key="workOrderView" component={WorkOrderForm} hideNavBar={true} style={{flex:1, backgroundColor:'transparent'}}/>
+                      </Scene>
                     </Scene>
                 </Scene>
             </Scene>
