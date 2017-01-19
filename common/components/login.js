@@ -19,7 +19,11 @@ var options = {
   auto: 'placeholders',
   fields: {
     Password: {
-      secureTextEntry: true
+      secureTextEntry: true,
+      error: 'Please input password'
+    },
+    UserName: {
+      error: 'Please input username'
     }
   }
 };

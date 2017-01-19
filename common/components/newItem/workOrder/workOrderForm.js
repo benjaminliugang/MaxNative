@@ -1,7 +1,7 @@
 'use strict';
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, Image, ListView, TouchableHighlight } from 'react-native';
+import { Text, View, StyleSheet, Image, ListView, TouchableHighlight, ScrollView } from 'react-native';
 import {dbFunction} from '../../../basic/sqliteData';
 import t from 'tcomb-form-native';
 import {Actions} from 'react-native-router-flux';
@@ -221,14 +221,16 @@ export default class NewItem extends Component {
             />
           </View>
           <View style={styles.createItems}>
-            <Form
-              ref="form"
-              type={WorkOrder}
-              options={options}
-              value={this.state.workOrderValue}
-              onChange={this.onChange.bind(this)}
-              style={{backgroundColor: '#FF6633'}}
-            />
+            <ScrollView>
+              <Form
+                ref="form"
+                type={WorkOrder}
+                options={options}
+                value={this.state.workOrderValue}
+                onChange={this.onChange.bind(this)}
+                style={{backgroundColor: '#FF6633'}}
+              />
+            </ScrollView>
           </View>
         </View>
       </View>
