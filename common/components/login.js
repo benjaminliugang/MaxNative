@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import BasicVariables from '../basic/basicVariables';
-import {dbFunction} from '../basic/sqliteData'
+import {dbFunction} from '../basic/sqliteData';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 var Form = t.form.Form;
 
@@ -34,11 +35,26 @@ var Login = t.struct({
 });
 
 export default class MaxLogin extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      visible: false
+    };
+  }
+
   onPress() {
     var value = this.refs.form.getValue();
     dbFunction.initDB();
+    this.setState({
+      visible: !this.state.visible
+    });
     if (value) {
-      return Actions.navigation();
+      setTimeout(() => {
+        this.setState({
+          visible: !this.state.visible
+        });
+        Actions.navigation();
+      }, 3000);
     }
   }
 
@@ -56,6 +72,9 @@ export default class MaxLogin extends Component {
           <TouchableHighlight style={styles.button} onPress={this.onPress.bind(this)} underlayColor='#99d9f4'>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableHighlight>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Spinner visible={this.state.visible} textContent={'Loading...'} textStyle={{color: '#FFF'}}/>
         </View>
       </View>
     );
