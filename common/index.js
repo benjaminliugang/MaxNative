@@ -5,6 +5,7 @@ import Navigation from './components/navigation';
 import MaxLogin from './components/login';
 import NewItem from './components/newItem/newItem';
 import WorkOrderForm from './components/newItem/workOrder/workOrderForm';
+import ReduxFormIndex from './components/newItem/workOrder/reduxFormIndex'
 import {
     StyleSheet,
     Text,

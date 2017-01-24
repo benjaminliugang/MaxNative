@@ -1,11 +1,12 @@
 'use strict';
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, Image, ListView, TouchableHighlight, ScrollView, TextInput } from 'react-native';
+import { Text, View, StyleSheet, Image, ListView, TouchableHighlight, ScrollView } from 'react-native';
 import {dbFunction} from '../../../basic/sqliteData';
 import t from 'tcomb-form-native';
 import {Actions} from 'react-native-router-flux';
 import transform, {transformOptions} from 'tcomb-json-schema';
+import {reduxForm} from 'redux-form';
 
 var Form = t.form.Form;
 var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
@@ -15,9 +16,8 @@ const stylesheet = _.cloneDeep(t.form.Form.stylesheet);
 stylesheet.fieldset = {
   flexDirection: 'row'
 };
-// stylesheet.formGroup.normal.flexDirection = 'row';
-stylesheet.controlLabel.normal.color = '#C7C7C7';
-// t.form.Form.stylesheet.controlLabel.normal.color = '#C7C7C7';
+stylesheet.formGroup.normal.flexDirection = 'row';
+t.form.Form.stylesheet.controlLabel.normal.color = '#C7C7C7';
 
 // const options = {
 //   fields: {
@@ -54,20 +54,6 @@ var Options = t.enums({
   C: 'OptionC'
 });
 
-var myCustomTemplate = (locals) => {
-
-  var containerStyle = {borderColor: '#F7F7F7'};
-  var labelStyle = {color: '#FF4B66'};
-  var textboxStyle = {height: 40, borderColor: 'gray', borderWidth: 1};
-
-  return (
-    <View style={containerStyle}>
-      <Text style={labelStyle}>{locals.label}</Text>
-      <TextInput style={textboxStyle} />
-    </View>
-  );
-}
-
 const WorkOrder = t.struct({
   workOrderInformation: t.struct({
     svmx_work_order_number: t.String,
@@ -76,38 +62,24 @@ const WorkOrder = t.struct({
   active: t.Boolean,
   Date: t.Date,
   Descriptions: t.struct({
-    search: t.list(t.String),
     svmx_subject: t.maybe(t.String),
     Option: Options,
     svmx_description: t.maybe(t.String)
   })
 });
 
-var listTransformer = {
-  format: function (value) {
-    return Array.isArray(value) ? value.join(' ') : value;
-  },
-  parse: function (str) {
-    return str ? str.split(' ') : [];
-  }
-};
-
 const options = {
   fields: {
     workOrderInformation: {
       fields: {
         svmx_work_order_number: {
-          label: 'Work Order Number',
-          // template: myCustomTemplate
-          placeholder: 'Your placeholder here'
+          label: 'Work Order Number'
         },
         svmx_contact: {
-          label: 'Contact',
-          help: 'Help message'
+          label: 'Contact'
         }
       },
       label: 'Work Order Information'
-      // stylesheet: stylesheet
     },
     Descriptions: {
       fields: {
@@ -116,11 +88,6 @@ const options = {
         },
         svmx_description: {
           label: 'Description'
-        },
-        search: {
-          factory: t.form.Textbox, // tell tcomb-react-native to use the same component for textboxes
-          transformer: listTransformer,
-          help: 'Keywords are separated by spaces'
         }
       }
     }
@@ -157,7 +124,7 @@ export default class NewItem extends Component {
     this.state = {
       workOrders: ds.cloneWithRows([]),
       db: [],
-      workOrderValue: {Descriptions: {search: ['climbing', 'yosemite']}},
+      workOrderValue: null,
       currentRecordId: null
     };
 
@@ -238,7 +205,7 @@ export default class NewItem extends Component {
               <Text> Cancel </Text>
             </View>
           </TouchableHighlight>
-          <View style={{flex: 11, alignItems: 'center'}}>
+          <View style={{flex: 1, alignItems: 'center'}}>
             <Text style={{fontWeight: 'bold', color: '#FFFFFF', fontSize: 16}}> Create New RAM </Text>
           </View>
           <TouchableHighlight style={{flex: 1, alignItems: 'flex-end'}} onPress={this.onRight.bind(this)}>

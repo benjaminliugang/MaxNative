@@ -42,13 +42,18 @@ export default class MaxLogin extends Component {
     };
   }
 
+  componentDidMount() {
+    // give focus to the name textbox
+    this.refs.form.getComponent('UserName').refs.input.focus();
+  }
+
   onPress() {
     var value = this.refs.form.getValue();
     dbFunction.initDB();
-    this.setState({
-      visible: !this.state.visible
-    });
     if (value) {
+      this.setState({
+        visible: !this.state.visible
+      });
       setTimeout(() => {
         this.setState({
           visible: !this.state.visible
