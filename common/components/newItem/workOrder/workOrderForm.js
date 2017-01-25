@@ -48,11 +48,26 @@ stylesheet.controlLabel.normal.color = '#C7C7C7';
 //   }
 // };
 
+var ShortString = t.refinement(t.String, function (s) {
+  return s.length < 3;
+});
+
+ShortString.getValidationErrorMessage = function (value) {
+  if (!value) {
+    return 'Required';
+  }
+  if (value.length >= 3) {
+    return 'Too long my friend';
+  }
+};
+
 var Options = t.enums({
   A: 'OptionA',
   B: 'OptionB',
-  C: 'OptionC'
+  C: 'OptionCd'
 });
+
+var DynamicOptions = t.enums({});
 
 var myCustomTemplate = (locals) => {
 
@@ -70,15 +85,16 @@ var myCustomTemplate = (locals) => {
 
 const WorkOrder = t.struct({
   workOrderInformation: t.struct({
-    svmx_work_order_number: t.String,
+    svmx_work_order_number: t.Number,
     svmx_contact: t.maybe(t.String)
   }),
   active: t.Boolean,
   Date: t.Date,
   Descriptions: t.struct({
+    dynamicField: t.maybe(t.String),
     search: t.list(t.String),
     svmx_subject: t.maybe(t.String),
-    Option: Options,
+    Option: t.maybe(Options),
     svmx_description: t.maybe(t.String)
   })
 });
@@ -89,41 +105,6 @@ var listTransformer = {
   },
   parse: function (str) {
     return str ? str.split(' ') : [];
-  }
-};
-
-const options = {
-  fields: {
-    workOrderInformation: {
-      fields: {
-        svmx_work_order_number: {
-          label: 'Work Order Number',
-          // template: myCustomTemplate
-          placeholder: 'Your placeholder here'
-        },
-        svmx_contact: {
-          label: 'Contact',
-          help: 'Help message'
-        }
-      },
-      label: 'Work Order Information'
-      // stylesheet: stylesheet
-    },
-    Descriptions: {
-      fields: {
-        svmx_subject: {
-          label: 'Subject'
-        },
-        svmx_description: {
-          label: 'Description'
-        },
-        search: {
-          factory: t.form.Textbox, // tell tcomb-react-native to use the same component for textboxes
-          transformer: listTransformer,
-          help: 'Keywords are separated by spaces'
-        }
-      }
-    }
   }
 };
 
@@ -154,14 +135,83 @@ const options = {
 export default class NewItem extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
+      type: WorkOrder,
       workOrders: ds.cloneWithRows([]),
       db: [],
       workOrderValue: {Descriptions: {search: ['climbing', 'yosemite']}},
-      currentRecordId: null
+      currentRecordId: null,
+      options: {
+        fields: {
+          workOrderInformation: {
+            fields: {
+              svmx_work_order_number: {
+                label: 'Work Order Number',
+                // template: myCustomTemplate
+                placeholder: 'Your placeholder here'
+              },
+              svmx_contact: {
+                label: 'Contact',
+                help: 'Help message'
+              }
+            },
+            label: 'Work Order Information'
+            // stylesheet: stylesheet
+          },
+          Descriptions: {
+            fields: {
+              dynamicField: {
+                onFocus: this.optionOnFocus.bind(this)
+              },
+              svmx_subject: {
+                label: 'Subject'
+              },
+              svmx_description: {
+                label: 'Description'
+              },
+              search: {
+                factory: t.form.Textbox, // tell tcomb-react-native to use the same component for textboxes
+                transformer: listTransformer,
+                help: 'Keywords are separated by spaces'
+              }
+            }
+          }
+        }
+      }
     };
 
     this.getWorkOrders();
+  }
+
+  optionOnFocus() {
+    console.log('Option on focus');
+    DynamicOptions = t.enums({
+        A: 'OptionA',
+        B: 'OptionB',
+        C: 'OptionCd'
+    });
+
+    WorkOrder = t.struct({
+      workOrderInformation: t.struct({
+        svmx_work_order_number: t.String,
+        svmx_contact: t.maybe(t.String)
+      }),
+      active: t.Boolean,
+      Date: t.Date,
+      Descriptions: t.struct({
+        dynamicField: t.maybe(DynamicOptions),
+        search: t.list(t.String),
+        svmx_subject: t.maybe(t.String),
+        Option: t.maybe(Options),
+        svmx_description: t.maybe(t.String)
+      })
+    });
+    setTimeout(() => {
+      this.setState({
+        type: WorkOrder
+      });
+    }, 3000);
   }
 
   getWorkOrders() {
@@ -222,6 +272,7 @@ export default class NewItem extends Component {
 
   onChange(value) {
     this.setState({workOrderValue: value || ''});
+    // this.optionOnFocus();
   }
 
   _cancel() {
@@ -258,8 +309,8 @@ export default class NewItem extends Component {
             <ScrollView>
               <Form
                 ref="form"
-                type={WorkOrder}
-                options={options}
+                type={this.state.type}
+                options={this.state.options}
                 value={this.state.workOrderValue}
                 onChange={this.onChange.bind(this)}
                 style={{backgroundColor: '#FF6633'}}
